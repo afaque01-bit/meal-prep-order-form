@@ -25,6 +25,7 @@
     .hero p { max-width:880px; margin:0 auto; color:#f6e9dc; font-size:16px; }
     .container { max-width:1180px; margin:0 auto; padding:18px; }
     .notice { background:#ecfdf3; border:1px solid #abefc6; color:#05603a; border-radius:12px; padding:13px 15px; margin:16px 0; font-size:14px; }
+    .allergy-warning { background:#fff7ed; border:1px solid #fed7aa; color:#9a3412; border-radius:12px; padding:12px; margin-top:12px; font-size:13px; }
     .grid { display:grid; grid-template-columns:1fr; gap:16px; }
     @media (min-width:960px){ .grid.two { grid-template-columns:1.1fr .9fr; } }
     .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:16px; box-shadow:0 3px 12px rgba(31,41,51,.06); }
@@ -33,6 +34,10 @@
     label { display:block; font-size:14px; margin:10px 0 5px; font-weight:600; }
     input, select, textarea { width:100%; padding:11px 12px; border:1px solid #cfc7bb; border-radius:10px; font-size:15px; background:#fff; }
     textarea { min-height:88px; resize:vertical; }
+    .checkbox-grid { display:grid; grid-template-columns:1fr; gap:8px; margin-top:8px; }
+    @media (min-width:720px){ .checkbox-grid { grid-template-columns:1fr 1fr; } }
+    .check-row { display:flex; gap:8px; align-items:flex-start; border:1px solid var(--border); border-radius:10px; padding:9px; background:#fff; font-size:14px; }
+    .check-row input { width:auto; margin-top:2px; }
     .radio-row,.meal-list,.builder-list { display:grid; gap:10px; margin-top:10px; }
     .option-box,.meal,.custom-meal { border:1px solid var(--border); border-radius:14px; padding:13px; background:#fff; }
     .option-box { background:var(--soft); cursor:pointer; display:flex; gap:10px; align-items:flex-start; }
@@ -86,9 +91,50 @@
           <input id="email" name="email" type="email" required placeholder="name@example.com" />
           <label for="phone">Phone Number</label>
           <input id="phone" name="phone" placeholder="Optional" />
-          <label for="pickupDate">Preferred Pickup / Delivery Date</label>
-          <input id="pickupDate" name="pickupDate" type="date" />
-          <label for="notes">Dietary Notes / Spice Level / Delivery Notes</label>
+          <div class="field-grid two">
+            <div>
+              <label for="pickupDate">Preferred Pickup / Delivery Date</label>
+              <input id="pickupDate" name="pickupDate" type="date" />
+            </div>
+            <div>
+              <label for="pickupTime">Preferred Pickup / Delivery Time</label>
+              <input id="pickupTime" name="pickupTime" type="time" />
+            </div>
+          </div>
+
+          <h3>Allergy / Food Sensitivity Information</h3>
+
+          <label for="allergyStatus">Do you have any food allergies or sensitivities? *</label>
+          <select id="allergyStatus" name="allergyStatus" required>
+            <option value="">Please select</option>
+            <option value="No known food allergies">No known food allergies</option>
+            <option value="Yes, I have allergies or sensitivities">Yes, I have allergies or sensitivities</option>
+            <option value="Not sure / Need to discuss">Not sure / Need to discuss</option>
+          </select>
+
+          <label>Select any that apply</label>
+          <div class="checkbox-grid">
+            <label class="check-row"><input type="checkbox" name="allergyItem" value="Dairy / Greek yogurt" /> Dairy / Greek yogurt</label>
+            <label class="check-row"><input type="checkbox" name="allergyItem" value="Wheat / gluten / roti" /> Wheat / gluten / roti</label>
+            <label class="check-row"><input type="checkbox" name="allergyItem" value="Fish / seafood" /> Fish / seafood</label>
+            <label class="check-row"><input type="checkbox" name="allergyItem" value="Nuts" /> Nuts</label>
+            <label class="check-row"><input type="checkbox" name="allergyItem" value="Sesame" /> Sesame</label>
+            <label class="check-row"><input type="checkbox" name="allergyItem" value="Soy" /> Soy</label>
+            <label class="check-row"><input type="checkbox" name="allergyItem" value="Egg" /> Egg</label>
+            <label class="check-row"><input type="checkbox" name="allergyItem" value="Corn" /> Corn</label>
+            <label class="check-row"><input type="checkbox" name="allergyItem" value="Onion / garlic" /> Onion / garlic</label>
+            <label class="check-row"><input type="checkbox" name="allergyItem" value="Spice / chili sensitivity" /> Spice / chili sensitivity</label>
+            <label class="check-row"><input type="checkbox" name="allergyItem" value="Other" /> Other</label>
+          </div>
+
+          <label for="allergyNotes">Allergy Details / Special Food Instructions</label>
+          <textarea id="allergyNotes" name="allergyNotes" placeholder="Example: allergic to nuts, avoid fish, no dairy, gluten-free needed, etc."></textarea>
+
+          <div class="allergy-warning">
+            Allergy note: Meals may be prepared in a kitchen that handles dairy, wheat/gluten, fish, nuts, sesame, soy, egg, corn, onion, garlic, and spices. Please mention any allergy or sensitivity before ordering.
+          </div>
+
+          <label for="notes">General Notes / Spice Level / Delivery Notes</label>
           <textarea id="notes" name="notes" placeholder="Example: mild spice, no onion, extra salad, pickup preferred, etc."></textarea>
         </section>
 
@@ -149,7 +195,7 @@
       Example:
       const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/xxxxx/exec";
     */
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx8KDFeQL9KWVE3dVB0DY_1PKJIDliy5c8Sd_q6_mfOgTGnS81ov73hlNvj5meA2mXfow/exec";
+    const GOOGLE_SCRIPT_URL = "PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
 
     let preparedMeals = [];
     let proteins = [];
@@ -173,6 +219,10 @@
         .replaceAll(">", "&gt;")
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#039;");
+    }
+
+    function getAllergyItems() {
+      return Array.from(document.querySelectorAll('input[name="allergyItem"]:checked')).map(item => item.value);
     }
 
     function loadMenuFromGoogleSheet() {
@@ -457,6 +507,10 @@
         email: document.getElementById("email").value.trim(),
         phone: document.getElementById("phone").value.trim(),
         pickupDate: document.getElementById("pickupDate").value,
+        pickupTime: document.getElementById("pickupTime").value,
+        allergyStatus: document.getElementById("allergyStatus").value,
+        allergyItems: getAllergyItems(),
+        allergyNotes: document.getElementById("allergyNotes").value.trim(),
         notes: document.getElementById("notes").value.trim(),
         orderType: type,
         orderDetails,
@@ -475,6 +529,11 @@
 
       if (!orderData.customerName || !orderData.email) {
         formMessage.innerHTML = `<div class="error">Please enter customer name and email.</div>`;
+        return;
+      }
+
+      if (!orderData.allergyStatus) {
+        formMessage.innerHTML = `<div class="error">Please select allergy / food sensitivity information.</div>`;
         return;
       }
 
