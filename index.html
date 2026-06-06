@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>High-Protein Desi Meal Prep</title>
+  <style>
+    :root {
+      --bg: #f7f3ed;
+      --card: #ffffff;
+      --text: #1f2933;
+      --muted: #667085;
+      --accent: #7a4b28;
+      --accent2: #0f766e;
+      --border: #e6ded3;
+      --danger: #b42318;
+      --success: #067647;
+      --soft: #fff8ef;
+      --blueSoft: #eef4ff;
+    }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family:Arial, Helvetica, sans-serif; background:var(--bg); color:var(--text); line-height:1.45; }
+    .hero { background:linear-gradient(135deg,#2f1b12,#7a4b28); color:white; padding:34px 18px; text-align:center; }
+    .hero h1 { margin:0 0 8px; font-size:30px; }
+    .hero p { max-width:880px; margin:0 auto; color:#f6e9dc; font-size:16px; }
+    .container { max-width:1180px; margin:0 auto; padding:18px; }
+    .notice { background:#ecfdf3; border:1px solid #abefc6; color:#05603a; border-radius:12px; padding:13px 15px; margin:16px 0; font-size:14px; }
+    .grid { display:grid; grid-template-columns:1fr; gap:16px; }
+    @media (min-width:960px){ .grid.two { grid-template-columns:1.1fr .9fr; } }
+    .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:16px; box-shadow:0 3px 12px rgba(31,41,51,.06); }
+    h2 { margin:0 0 12px; font-size:22px; color:#2f1b12; }
+    h3 { margin:14px 0 8px; font-size:18px; color:#2f1b12; }
+    label { display:block; font-size:14px; margin:10px 0 5px; font-weight:600; }
+    input, select, textarea { width:100%; padding:11px 12px; border:1px solid #cfc7bb; border-radius:10px; font-size:15px; background:#fff; }
+    textarea { min-height:88px; resize:vertical; }
+    .radio-row,.meal-list,.builder-list { display:grid; gap:10px; margin-top:10px; }
+    .option-box,.meal,.custom-meal { border:1px solid var(--border); border-radius:14px; padding:13px; background:#fff; }
+    .option-box { background:var(--soft); cursor:pointer; display:flex; gap:10px; align-items:flex-start; }
+    .option-box input,.meal input[type="checkbox"] { width:auto; margin-top:3px; }
+    .option-box strong,.meal-title { display:block; color:#2f1b12; font-weight:800; }
+    .option-box span,.meal-meta,.small { color:var(--muted); font-size:13px; }
+    .tabs { display:grid; grid-template-columns:1fr; gap:10px; margin-bottom:12px; }
+    @media (min-width:720px){ .tabs { grid-template-columns:repeat(3,1fr); } }
+    .tab-btn { border:1px solid var(--border); border-radius:12px; background:#fff; color:#2f1b12; padding:12px; margin:0; font-weight:800; cursor:pointer; }
+    .tab-btn.active { background:#2f1b12; color:white; border-color:#2f1b12; }
+    .section-panel { display:none; }
+    .section-panel.active { display:block; }
+    .meal-top { display:flex; gap:10px; align-items:flex-start; }
+    .badge { display:inline-block; font-size:12px; padding:3px 7px; border-radius:999px; background:var(--blueSoft); color:#3538cd; margin-left:5px; }
+    .meal-detail { font-size:13px; color:#344054; background:#faf8f5; border-radius:10px; padding:9px; margin-top:8px; }
+    .field-grid { display:grid; grid-template-columns:1fr; gap:8px; }
+    @media (min-width:720px){ .field-grid.two { grid-template-columns:1fr 1fr; } }
+    .summary { position:sticky; top:10px; align-self:start; }
+    .summary-box { background:#2f1b12; color:#fff; border-radius:14px; padding:16px; }
+    .summary-line { display:flex; justify-content:space-between; gap:16px; margin:8px 0; font-size:15px; }
+    .summary-line.total { border-top:1px solid rgba(255,255,255,.24); margin-top:12px; padding-top:12px; font-size:20px; font-weight:800; }
+    .summary-box .small { color:#f6e9dc; }
+    .error { color:var(--danger); font-weight:700; margin-top:8px; }
+    .success { color:var(--success); font-weight:700; margin-top:8px; }
+    button.submit { width:100%; border:0; border-radius:12px; padding:14px 16px; font-size:16px; font-weight:800; background:var(--accent2); color:white; cursor:pointer; margin-top:14px; }
+    button.submit:disabled { opacity:.55; cursor:not-allowed; }
+    .footer-note { font-size:12px; color:var(--muted); margin-top:12px; }
+    .category-title { background:#f3eee7; border-radius:10px; padding:9px 11px; margin:14px 0 8px; font-weight:800; color:#2f1b12; }
+    .component-note { background:#fffbeb; border:1px solid #fedf89; color:#7a4b28; padding:10px; border-radius:12px; font-size:13px; margin-bottom:12px; }
+    .loading { padding:14px; border:1px dashed #cfc7bb; border-radius:12px; color:var(--muted); background:#fff; }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <h1>High-Protein Desi Meal Prep</h1>
+    <p>Choose a ready package, select prepared meals, or build your own custom meal with protein, vegetables, moderate carbs, and organic fat-free Greek yogurt sauce.</p>
+  </header>
+
+  <main class="container">
+    <div class="notice">
+      All meals are high-protein, vegetable-focused, moderate-carb, and include organic fat-free Greek yogurt as marinade, raita, chutney, dressing, or sauce.
+    </div>
+
+    <form id="orderForm">
+      <div class="grid two">
+        <section class="card">
+          <h2>Customer Details</h2>
+          <label for="customerName">Customer Name *</label>
+          <input id="customerName" name="customerName" required placeholder="Enter your name" />
+          <label for="email">Email Address *</label>
+          <input id="email" name="email" type="email" required placeholder="name@example.com" />
+          <label for="phone">Phone Number</label>
+          <input id="phone" name="phone" placeholder="Optional" />
+          <label for="pickupDate">Preferred Pickup / Delivery Date</label>
+          <input id="pickupDate" name="pickupDate" type="date" />
+          <label for="notes">Dietary Notes / Spice Level / Delivery Notes</label>
+          <textarea id="notes" name="notes" placeholder="Example: mild spice, no onion, extra salad, pickup preferred, etc."></textarea>
+        </section>
+
+        <section class="card summary">
+          <h2>Order Summary</h2>
+          <div class="summary-box">
+            <div class="summary-line"><span>Order Type</span><strong id="summaryType">Ready Package</strong></div>
+            <div class="summary-line"><span>Total Meals</span><strong id="summaryMeals">0</strong></div>
+            <div class="summary-line"><span>Subtotal</span><strong id="summarySubtotal">$0.00</strong></div>
+            <div class="summary-line"><span>Portion Adjustment</span><strong id="summaryPortion">$0.00</strong></div>
+            <div class="summary-line total"><span>Estimated Total</span><span id="summaryTotal">$0.00</span></div>
+            <p class="small">Prices are approximate. Delivery, substitutions, and premium protein may change the final total.</p>
+          </div>
+          <div id="formMessage"></div>
+          <button class="submit" id="submitBtn" type="submit">Submit Meal Request</button>
+          <p class="footer-note">You will be contacted for final confirmation and payment.</p>
+        </section>
+      </div>
+
+      <section class="card" style="margin-top:16px;">
+        <h2>Choose How You Want to Order</h2>
+
+        <div class="tabs">
+          <button type="button" class="tab-btn active" data-tab="packages">Ready Packages</button>
+          <button type="button" class="tab-btn" data-tab="prepared">Prepared Meals</button>
+          <button type="button" class="tab-btn" data-tab="custom">Build Your Own</button>
+        </div>
+
+        <input type="hidden" id="orderType" value="packages" />
+
+        <div id="packages" class="section-panel active">
+          <p class="small">Fastest option. Customer chooses a weekly package.</p>
+          <div id="packageOptions" class="radio-row"><div class="loading">Loading packages from Google Sheet...</div></div>
+        </div>
+
+        <div id="prepared" class="section-panel">
+          <p class="small">Customer can select up to 5 prepared meal options.</p>
+          <div class="category-title">Chicken Meals</div>
+          <div id="chickenMeals" class="meal-list"><div class="loading">Loading menu from Google Sheet...</div></div>
+          <div class="category-title">Fish Meals</div>
+          <div id="fishMeals" class="meal-list"><div class="loading">Loading menu from Google Sheet...</div></div>
+        </div>
+
+        <div id="custom" class="section-panel">
+          <div class="component-note">
+            Build Your Own means each meal is made from separate items: protein + vegetable/salad + carb + organic fat-free Greek yogurt sauce. Customer can build up to 5 custom meals.
+          </div>
+          <div id="customMeals" class="builder-list"><div class="loading">Loading build-your-own items from Google Sheet...</div></div>
+        </div>
+      </section>
+    </form>
+  </main>
+
+  <script>
+    /*
+      Paste your Google Apps Script Web App URL here.
+      It must end with /exec.
+      Example:
+      const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/xxxxx/exec";
+    */
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx8KDFeQL9KWVE3dVB0DY_1PKJIDliy5c8Sd_q6_mfOgTGnS81ov73hlNvj5meA2mXfow/exec";
+
+    let preparedMeals = [];
+    let proteins = [];
+    let vegetables = [];
+    let carbs = [];
+    let sauces = [];
+    let packages = [];
+
+    const portionAdjustments = { "Small": -1.00, "Regular": 0.00, "Large": 2.50 };
+    const customCount = 5;
+
+    const formMessage = document.getElementById("formMessage");
+    const submitBtn = document.getElementById("submitBtn");
+
+    function money(value) { return "$" + Number(value || 0).toFixed(2); }
+
+    function escapeHtml(text) {
+      return String(text || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function loadMenuFromGoogleSheet() {
+      if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes("PASTE_YOUR")) {
+        formMessage.innerHTML = `<div class="error">Admin setup needed: paste your Google Apps Script Web App URL inside index.html.</div>`;
+        return;
+      }
+
+      const callbackName = "menuCallback_" + Date.now();
+      window[callbackName] = function(data) {
+        preparedMeals = data.preparedMeals || [];
+        proteins = data.proteins || [];
+        vegetables = data.vegetables || [];
+        carbs = data.carbs || [];
+        sauces = data.sauces || [];
+        packages = data.packages || [];
+
+        renderAll();
+        updateSummary();
+
+        delete window[callbackName];
+      };
+
+      const script = document.createElement("script");
+      script.src = GOOGLE_SCRIPT_URL + "?action=menu&callback=" + callbackName + "&cacheBust=" + Date.now();
+      script.onerror = function() {
+        formMessage.innerHTML = `<div class="error">Could not load menu from Google Sheet. Check Apps Script deployment and Web App URL.</div>`;
+      };
+      document.body.appendChild(script);
+    }
+
+    function renderAll() {
+      renderPackages();
+      renderPreparedMeals();
+      renderCustomBuilder();
+    }
+
+    function renderPackages() {
+      const el = document.getElementById("packageOptions");
+      el.innerHTML = "";
+
+      packages.forEach((pkg, index) => {
+        const label = document.createElement("label");
+        label.className = "option-box";
+        label.innerHTML = `
+          <input type="radio" name="packageType" value="${escapeHtml(pkg.name)}" data-price="${Number(pkg.price)}" ${index === 0 ? "checked" : ""} />
+          <div>
+            <strong>${escapeHtml(pkg.name)} — Approx ${money(pkg.price)}</strong>
+            <span>${escapeHtml(pkg.description)}</span>
+          </div>
+        `;
+        el.appendChild(label);
+      });
+    }
+
+    function renderPreparedMeals() {
+      const chickenEl = document.getElementById("chickenMeals");
+      const fishEl = document.getElementById("fishMeals");
+      chickenEl.innerHTML = "";
+      fishEl.innerHTML = "";
+
+      preparedMeals.forEach(meal => {
+        const wrapper = document.createElement("div");
+        wrapper.className = "meal";
+        wrapper.innerHTML = `
+          <div class="meal-top">
+            <input type="checkbox" class="meal-check" id="${escapeHtml(meal.id)}" value="${escapeHtml(meal.id)}" />
+            <div>
+              <label for="${escapeHtml(meal.id)}" class="meal-title">
+                ${escapeHtml(meal.name)}
+                ${meal.tag ? `<span class="badge">${escapeHtml(meal.tag)}</span>` : ""}
+              </label>
+              <div class="meal-meta">Approx price: <strong>${escapeHtml(meal.displayPrice || money(meal.price))}</strong></div>
+            </div>
+          </div>
+          <div class="meal-detail">
+            <strong>Protein:</strong> ${escapeHtml(meal.protein)}<br>
+            <strong>Vegetables/Salad:</strong> ${escapeHtml(meal.veg)}<br>
+            <strong>Carb:</strong> ${escapeHtml(meal.carb)}<br>
+            <strong>Organic Fat-Free Greek Yogurt:</strong> ${escapeHtml(meal.yogurt)}
+          </div>
+          <div class="field-grid two">
+            <div>
+              <label for="${escapeHtml(meal.id)}-portion">Portion Size</label>
+              <select class="prepared-portion" id="${escapeHtml(meal.id)}-portion">
+                <option value="Small">Small (-$1.00)</option>
+                <option value="Regular" selected>Regular</option>
+                <option value="Large">Large (+$2.50)</option>
+              </select>
+            </div>
+            <div>
+              <label for="${escapeHtml(meal.id)}-qty">Quantity</label>
+              <select class="prepared-qty" id="${escapeHtml(meal.id)}-qty">
+                <option value="1" selected>1</option>
+                <option value="2">2</option>
+              </select>
+            </div>
+          </div>
+        `;
+        if (String(meal.category).toLowerCase() === "chicken") chickenEl.appendChild(wrapper);
+        if (String(meal.category).toLowerCase() === "fish") fishEl.appendChild(wrapper);
+      });
+    }
+
+    function optionHTML(items, selectedIndex=0) {
+      return items.map((item, idx) => {
+        const priceText = item.price ? ` — ${money(item.price)}` : "";
+        const selected = idx === selectedIndex ? "selected" : "";
+        return `<option value="${idx}" ${selected}>${escapeHtml(item.name)} (${escapeHtml(item.portion)})${priceText}</option>`;
+      }).join("");
+    }
+
+    function renderCustomBuilder() {
+      const customEl = document.getElementById("customMeals");
+      customEl.innerHTML = "";
+
+      for (let i = 1; i <= customCount; i++) {
+        const wrapper = document.createElement("div");
+        wrapper.className = "custom-meal";
+        wrapper.innerHTML = `
+          <h3>Custom Meal ${i}</h3>
+          <div class="field-grid two">
+            <div>
+              <label for="custom-${i}-enabled">Include this meal?</label>
+              <select class="custom-enabled" id="custom-${i}-enabled">
+                <option value="No" ${i === 1 ? "" : "selected"}>No</option>
+                <option value="Yes" ${i === 1 ? "selected" : ""}>Yes</option>
+              </select>
+            </div>
+            <div>
+              <label for="custom-${i}-portion">Portion Size</label>
+              <select class="custom-portion" id="custom-${i}-portion">
+                <option value="Small">Small (-$1.00)</option>
+                <option value="Regular" selected>Regular</option>
+                <option value="Large">Large (+$2.50)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field-grid two">
+            <div>
+              <label for="custom-${i}-protein">Protein</label>
+              <select class="custom-protein" id="custom-${i}-protein">${optionHTML(proteins, 0)}</select>
+            </div>
+            <div>
+              <label for="custom-${i}-veg">Vegetable / Salad</label>
+              <select class="custom-veg" id="custom-${i}-veg">${optionHTML(vegetables, 0)}</select>
+            </div>
+          </div>
+
+          <div class="field-grid two">
+            <div>
+              <label for="custom-${i}-carb">Carb</label>
+              <select class="custom-carb" id="custom-${i}-carb">${optionHTML(carbs, 0)}</select>
+            </div>
+            <div>
+              <label for="custom-${i}-sauce">Organic Fat-Free Greek Yogurt Sauce</label>
+              <select class="custom-sauce" id="custom-${i}-sauce">${optionHTML(sauces, 0)}</select>
+            </div>
+          </div>
+        `;
+        customEl.appendChild(wrapper);
+      }
+    }
+
+    function setActiveTab(tabName) {
+      document.getElementById("orderType").value = tabName;
+      document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.toggle("active", btn.dataset.tab === tabName));
+      document.querySelectorAll(".section-panel").forEach(panel => panel.classList.toggle("active", panel.id === tabName));
+      updateSummary();
+    }
+
+    function getPackageSelection() {
+      const radio = document.querySelector('input[name="packageType"]:checked');
+      return radio ? { name: radio.value, price: Number(radio.dataset.price) } : { name: "", price: 0 };
+    }
+
+    function getPreparedSelected() {
+      const selected = [];
+      document.querySelectorAll(".meal-check:checked").forEach(check => {
+        const meal = preparedMeals.find(m => m.id === check.value);
+        if (!meal) return;
+        const portion = document.getElementById(`${meal.id}-portion`).value;
+        const qty = Number(document.getElementById(`${meal.id}-qty`).value);
+        const lineTotal = (Number(meal.price) + portionAdjustments[portion]) * qty;
+        selected.push({ ...meal, portion, qty, lineTotal });
+      });
+      return selected;
+    }
+
+    function getCustomSelected() {
+      const selected = [];
+      for (let i = 1; i <= customCount; i++) {
+        const enabled = document.getElementById(`custom-${i}-enabled`)?.value;
+        if (enabled !== "Yes") continue;
+
+        const portion = document.getElementById(`custom-${i}-portion`).value;
+        const protein = proteins[Number(document.getElementById(`custom-${i}-protein`).value)];
+        const veg = vegetables[Number(document.getElementById(`custom-${i}-veg`).value)];
+        const carb = carbs[Number(document.getElementById(`custom-${i}-carb`).value)];
+        const sauce = sauces[Number(document.getElementById(`custom-${i}-sauce`).value)];
+
+        const base = Number(protein.price) + Number(veg.price) + Number(carb.price) + Number(sauce.price);
+        const lineTotal = base + portionAdjustments[portion];
+
+        selected.push({ mealNumber: i, portion, protein, veg, carb, sauce, base, lineTotal });
+      }
+      return selected;
+    }
+
+    function updateSummary() {
+      const type = document.getElementById("orderType").value;
+      let meals = 0, subtotal = 0, portionTotal = 0, total = 0, typeLabel = "";
+
+      if (type === "packages") {
+        const pkg = getPackageSelection();
+        typeLabel = pkg.name || "Ready Package";
+        meals = pkg.name ? 5 : 0;
+        subtotal = pkg.price;
+        total = pkg.price;
+      } else if (type === "prepared") {
+        typeLabel = "Prepared Meals";
+        const selected = getPreparedSelected();
+        meals = selected.reduce((sum, m) => sum + m.qty, 0);
+        subtotal = selected.reduce((sum, m) => sum + (Number(m.price) * m.qty), 0);
+        portionTotal = selected.reduce((sum, m) => sum + (portionAdjustments[m.portion] * m.qty), 0);
+        total = subtotal + portionTotal;
+      } else if (type === "custom") {
+        typeLabel = "Build Your Own";
+        const selected = getCustomSelected();
+        meals = selected.length;
+        subtotal = selected.reduce((sum, m) => sum + m.base, 0);
+        portionTotal = selected.reduce((sum, m) => sum + portionAdjustments[m.portion], 0);
+        total = subtotal + portionTotal;
+      }
+
+      document.getElementById("summaryType").textContent = typeLabel;
+      document.getElementById("summaryMeals").textContent = meals;
+      document.getElementById("summarySubtotal").textContent = money(subtotal);
+      document.getElementById("summaryPortion").textContent = money(portionTotal);
+      document.getElementById("summaryTotal").textContent = money(total);
+
+      if ((type === "prepared" || type === "custom") && meals > 5) {
+        formMessage.innerHTML = `<div class="error">Please select maximum 5 meals total.</div>`;
+        submitBtn.disabled = true;
+      } else {
+        if (formMessage.textContent.includes("maximum")) formMessage.innerHTML = "";
+        submitBtn.disabled = false;
+      }
+    }
+
+    function prepareOrderData() {
+      const type = document.getElementById("orderType").value;
+      let orderDetails = {};
+      let totalMeals = 0, subtotal = 0, portionTotal = 0, total = 0;
+
+      if (type === "packages") {
+        const pkg = getPackageSelection();
+        orderDetails = { package: pkg };
+        totalMeals = 5;
+        subtotal = pkg.price;
+        total = pkg.price;
+      } else if (type === "prepared") {
+        const selected = getPreparedSelected();
+        orderDetails = { preparedMeals: selected };
+        totalMeals = selected.reduce((sum, m) => sum + m.qty, 0);
+        subtotal = selected.reduce((sum, m) => sum + (Number(m.price) * m.qty), 0);
+        portionTotal = selected.reduce((sum, m) => sum + (portionAdjustments[m.portion] * m.qty), 0);
+        total = subtotal + portionTotal;
+      } else if (type === "custom") {
+        const selected = getCustomSelected();
+        orderDetails = { customMeals: selected };
+        totalMeals = selected.length;
+        subtotal = selected.reduce((sum, m) => sum + m.base, 0);
+        portionTotal = selected.reduce((sum, m) => sum + portionAdjustments[m.portion], 0);
+        total = subtotal + portionTotal;
+      }
+
+      return {
+        timestamp: new Date().toISOString(),
+        customerName: document.getElementById("customerName").value.trim(),
+        email: document.getElementById("email").value.trim(),
+        phone: document.getElementById("phone").value.trim(),
+        pickupDate: document.getElementById("pickupDate").value,
+        notes: document.getElementById("notes").value.trim(),
+        orderType: type,
+        orderDetails,
+        totalMeals,
+        subtotal: subtotal.toFixed(2),
+        portionAdjustment: portionTotal.toFixed(2),
+        estimatedTotal: total.toFixed(2)
+      };
+    }
+
+    async function submitOrder(event) {
+      event.preventDefault();
+      formMessage.innerHTML = "";
+
+      const orderData = prepareOrderData();
+
+      if (!orderData.customerName || !orderData.email) {
+        formMessage.innerHTML = `<div class="error">Please enter customer name and email.</div>`;
+        return;
+      }
+
+      if ((orderData.orderType === "prepared" || orderData.orderType === "custom") && orderData.totalMeals < 1) {
+        formMessage.innerHTML = `<div class="error">Please select at least 1 meal.</div>`;
+        return;
+      }
+
+      if ((orderData.orderType === "prepared" || orderData.orderType === "custom") && orderData.totalMeals > 5) {
+        formMessage.innerHTML = `<div class="error">Please select maximum 5 meals total.</div>`;
+        return;
+      }
+
+      if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes("PASTE_YOUR")) {
+        formMessage.innerHTML = `<div class="error">Admin setup needed: paste your Google Apps Script Web App URL inside index.html.</div>`;
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Submitting...";
+
+      try {
+        await fetch(GOOGLE_SCRIPT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(orderData)
+        });
+
+        formMessage.innerHTML = `<div class="success">Thank you! Your meal request has been submitted.</div>`;
+        document.getElementById("orderForm").reset();
+        setActiveTab("packages");
+        updateSummary();
+      } catch (error) {
+        formMessage.innerHTML = `<div class="error">Something went wrong. Please try again or contact us directly.</div>`;
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Submit Meal Request";
+      }
+    }
+
+    document.querySelectorAll(".tab-btn").forEach(btn => btn.addEventListener("click", () => setActiveTab(btn.dataset.tab)));
+    document.addEventListener("change", updateSummary);
+    document.getElementById("orderForm").addEventListener("submit", submitOrder);
+
+    loadMenuFromGoogleSheet();
+  </script>
+</body>
+</html>
